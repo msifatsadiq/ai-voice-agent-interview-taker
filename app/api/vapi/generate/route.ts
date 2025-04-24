@@ -4,12 +4,14 @@ import { generateText } from "ai";
 import { db } from "@/firebase/admin";
 import { getRandomInterviewCover } from "@/lib/utils";
 
+const apiKey = process.env.GOOGLE_GENERATIVE_API_KEY;
+
 export async function POST(request: Request) {
   const { type, role, level, techstack, amount, userid } = await request.json();
 
   try {
     const { text: questions } = await generateText({
-      model: google("gemini-2.0-flash-001"),
+      model: google("gemini-2.0-flash-001", apiKey),
       prompt: `Prepare questions for a job interview.
         The job role is ${role}.
         The job experience level is ${level}.
@@ -41,7 +43,7 @@ export async function POST(request: Request) {
 
     return Response.json({ success: true }, { status: 200 });
   } catch (error) {
-    console.error("Error:", error);
+    console.error("Error", error);
     return Response.json({ success: false, error: error }, { status: 500 });
   }
 }
